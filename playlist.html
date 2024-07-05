@@ -17,7 +17,7 @@
             me = await osql.getMe();
             document.getElementById('firstname').innerHTML = me.fname;
             document.getElementById('lastname').innerHTML = me.lname;
-
+            
             await refreshPlaylists();
             setInterval(refreshPlaylists, 2000);
         });
