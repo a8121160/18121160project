@@ -1,5 +1,2 @@
-index.htmlに認証機能をつける
-Localstorageでユーザー情報を渡す
 playlist.htmlで作る機能と見るだけのページ（watch.html）を分ける（認証機能をつける,Localstorageで編集者かそうでないか判断）
 SpotifyのAPIを呼び出して曲を表示
-少しstyleをやる
