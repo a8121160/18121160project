@@ -12,10 +12,10 @@
         osql.requireLogin();
 
         async function buttonPressed() {
-            var userid = document.getElementById('tf1').value;
+            var username = document.getElementById('tf1').value;
             var password = document.getElementById('tf2').value;
 
-            var sql = `select * from Users where id="${userid}";`;
+            var sql = `select * from Users where name="${username}";`;
             var objects = await osql.connect(sql);
             if (objects.length <= 0) {
                 document.getElementById('result').innerHTML = 'ログイン失敗：ユーザが見つかりません';
@@ -26,7 +26,7 @@
                 return;
             }
 
-            sessionStorage.setItem('userid', objects[0].id);
+            // sessionStorage.setItem('userid', objects[0].id);
             sessionStorage.setItem('username', objects[0].name);
 
             location.href = 'playlist.html';
@@ -44,7 +44,7 @@
     <h1>YourFovoriteSongs</h1>
     <div>
         <h2>ログイン</h2>
-        userid:<input id="tf1" value="" type="textfield">
+        username:<input id="tf1" value="" type="textfield">
         <br>
         password:<input id="tf2" value="" type="password">
         <br>

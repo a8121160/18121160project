@@ -11,12 +11,9 @@
     <script>
         osql.requireLogin();
 
-        var me;
-
         $(document).ready(async function () {
-            me = await osql.getMe();
-            document.getElementById('firstname').innerHTML = me.fname;
-            document.getElementById('lastname').innerHTML = me.lname;
+            var username = sessionStorage.getItem('username');
+            document.getElementById('firstname').innerHTML = username;
 
             await refreshPlaylists();
             setInterval(refreshPlaylists, 2000);
@@ -55,9 +52,9 @@
 
 <body>
     <h1>YourFovoriteSongs</h1>
-    <div style="text-align: right;">
-        ようこそ<span id="lastname"></span> <span id="firstname"></span>さん
-        <a href="index.html">top</a>
+    <div style="text-align: left;">
+        ようこそ！<span id="firstname"></span>さん
+        <a href="index.html">TOP</a>
     </div>
     <hr>
     <div>
