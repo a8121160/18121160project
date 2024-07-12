@@ -11,23 +11,31 @@
     <script>
         osql.requireLogin();
 
-        $(document).ready(async function () {
-            var me = await osql.getMe();
-            console.log(me);
-            var sql = `insert ignore into Users values('${me.id}', '${me.fname}', '${me.lname}');`;
-            await osql.connect(sql);
+        async function buttonPressed() {
+            var userid = document.getElementById('tf1').value;
+            var password = document.getElementById('tf2').value;
 
-            document.getElementById('firstname').innerHTML = me.fname;
-            document.getElementById('lastname').innerHTML = me.lname;
-        });
+            var sql = `select * from Users where id="${userid}";`;
+            var objects = await osql.connect(sql);
+            if (objects.length <= 0) {
+                document.getElementById('result').innerHTML = 'ログイン失敗：ユーザが見つかりません';
+                return;
+            }
+            if (objects[0].password != password) {
+                document.getElementById('result').innerHTML = 'ログイン失敗：パスワードが違います';
+                return;
+            }
 
-        function logout() {
-            osql.logout();
+            sessionStorage.setItem('userid', objects[0].id);
+            sessionStorage.setItem('username', objects[0].name);
+
+            location.href = 'playlist.html';
         }
 
         function auth(){
             
         }
+
     </script>
 
 </head>
@@ -40,15 +48,13 @@
         <br>
         password:<input id="tf2" value="" type="password">
         <br>
-        <button onclick="buttonPressed()">ログイン</button>
+        <br>
+        <button onclick="buttonPressed()">ログイン/プレイリストを作る</button>
         <p id="result"></p>
     </div>
     <hr>
     <p><a href="register.html">新規登録</a></p>
     <hr>
-    <div>
-        <a href="playlist.html">プレイリストを作る</a>
-    </div>
 </body>
 
 </html>
