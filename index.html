@@ -24,16 +24,27 @@
         function logout() {
             osql.logout();
         }
+
+        function auth(){
+            
+        }
     </script>
 
 </head>
 
 <body>
     <h1>YourFovoriteSongs</h1>
-    <div style="text-align: right;">
-        ようこそ<span id="lastname"></span> <span id="firstname"></span>さん
-        <a href="javascript:logout()">logout</a>
+    <div>
+        <h2>ログイン</h2>
+        userid:<input id="tf1" value="" type="textfield">
+        <br>
+        password:<input id="tf2" value="" type="password">
+        <br>
+        <button onclick="buttonPressed()">ログイン</button>
+        <p id="result"></p>
     </div>
+    <hr>
+    <p><a href="register.html">新規登録</a></p>
     <hr>
     <div>
         <a href="playlist.html">プレイリストを作る</a>
