@@ -11,13 +11,12 @@
     <script>
         osql.requireLogin();
 
-        var me;
         var playlistId = osql.getParam('playlistId');
+        var username = sessionStorage.getItem('username');
 
         $(document).ready(async function () {
-            me = await osql.getMe();
-            document.getElementById('firstname').innerHTML = me.fname;
-            document.getElementById('lastname').innerHTML = me.lname;
+            
+            document.getElementById('name').innerHTML = username;
 
             var sql = `select * from Playlists where id = ${playlistId};`;
             var objects = await osql.connect(sql);
@@ -30,8 +29,9 @@
         });
 
         async function newsong() {
-            var name = document.getElementById('song').value;
-            var sql = `insert into Songs (playlistId, userId, song, time) values(${playlistId}, '${me.id}','${name}', now());`;
+            var songname = document.getElementById('song').value;
+
+            var sql = `insert into Songs (playlistId, username, song, time) values(${playlistId}, '${username}','${songname}', now());`;
             var songId = await osql.connectInsert(sql);
             console.log(songId);
 
@@ -42,15 +42,15 @@
             var sql = `select * from Songs where playlistId = ${playlistId} order by time desc limit 10;`;
             var objects = await osql.connect(sql);
             console.log(objects);
+
             var html = '';
             html = html + '<table border="1">';
             for (var i = 0; i < objects.length; i++) {
                 html = html + '<tr>';
                 var object = objects[i];
                 html = html + `<td>${object.id}</td>`;
-                html = html + `<td>${object.time}</td>`;
-                html = html + `<td>${object.userId}</td>`;
                 html = html + `<td>${object.song}</td>`;
+                html = html + `<td>${object.username}</td>`;
                 html = html + '</tr>';
             }
             html = html + '</table>';
@@ -63,9 +63,9 @@
 
 <body>
     <h1><span id="playlistname"></span></h1>
-    <div style="text-align: right;">
-        ようこそ<span id="lastname"></span> <span id="firstname"></span>さん
-        <a href="index.html">top</a>
+    <div style="text-align: left;">
+        ようこそ！<span id="name"></span>さん
+        <a href="playlist.html">他のプレイリストを見る</a>
     </div>
     <hr>
     <div>
