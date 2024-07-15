@@ -3,5 +3,5 @@ osql.jsの６行目　osql.db=　も変えること．
 
 18121160は以下のデータベーススキーマで設計している．
 create table Users(id serial primary key,name varchar(128) ,password varchar(128));
-create table Playlists(id serial, name varchar(128),developer varchar(128));
+create table Playlists(id serial, name varchar(128),developer varchar(128),admin varchar(8));
 create table Songs(id serial, playlistId bigint, username varchar(128), song text, time timestamp);
