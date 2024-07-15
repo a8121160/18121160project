@@ -48,9 +48,7 @@
                 }refreshsongs() 
         }
 
-        async function editpermit(id){
-            refreshsongs() 
-        }
+  
 
         async function refreshsongs() {
             var sql = `select * from Songs where playlistId = ${playlistId} order by time desc limit 10;`;
@@ -88,8 +86,6 @@
         <input id="song" type="text">
         <button onclick="newsong()">new song</button>
     </div>
-    <br>
-    <button onclick="editpermit()">編集を許可する</button>
     <br>
     <div id="songs"></div>
 </body>

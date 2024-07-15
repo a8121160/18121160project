@@ -29,29 +29,6 @@
             setInterval(refreshsongs, 2000);
         });
 
-        async function newsong() {
-            var songname = document.getElementById('song').value;
-
-            var sql = `insert into Songs (playlistId, username, song, time) values(${playlistId}, '${username}','${songname}', now());`;
-            var songId = await osql.connectInsert(sql);
-            console.log(songId);
-
-            await refreshsongs();
-        }
-
-        async function buttonPressed(id){
-            var ans = window.confirm("この曲を削除しますか？");
-                if(ans == true){
-                    var sql = `delete from Songs where id = "${id}"`;
-                    var objects = await osql.connect(sql);
-                    refreshsongs()  
-                }refreshsongs() 
-        }
-
-        async function editpermit(id){
-            refreshsongs() 
-        }
-
         async function refreshsongs() {
             var sql = `select * from Songs where playlistId = ${playlistId} order by time desc limit 10;`;
             var objects = await osql.connect(sql);
@@ -59,14 +36,13 @@
 
             var html = '';
             html = html + '<table border="1">';
-            html = html + '<tr><td>曲名</td><td>追加者</td><td></td></tr>';
+            html = html + '<tr><td>曲名</td><td>追加者</td></tr>';
             for (var i = 0; i < objects.length; i++) {
                 html = html + '<tr>';
                 var object = objects[i];
                 //html = html + `<td>${object.id}</td>`;
                 html = html + `<td>${object.song}</td>`;
                 html = html + `<td>${object.username}</td>`;
-                html += '<td><button onclick="buttonPressed(\'' + object.id + '\')">削除</button></td>';
                 html = html + '</tr>';
             }
             html = html + '</table>';
@@ -84,13 +60,6 @@
         <a href="playlist.html">他のプレイリストを見る</a>
     </div>
     <hr>
-    <div>
-        <input id="song" type="text">
-        <button onclick="newsong()">new song</button>
-    </div>
-    <br>
-    <button onclick="editpermit()">編集を許可する</button>
-    <br>
     <div id="songs"></div>
 </body>
 

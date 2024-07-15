@@ -43,6 +43,10 @@
             refreshPlaylists();
         }
 
+        async function editpermit(id){
+            refreshsongs() 
+        }
+
         async function refreshPlaylists() {
             var sql = 'select * from Playlists;';
             var objects = await osql.connect(sql);
