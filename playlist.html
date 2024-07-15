@@ -8,11 +8,19 @@
     <script type="text/javascript" src="lib/jquery.min.js"></script>
     <script type="text/javascript" src="lib/osql.js"></script>
 
+    <style>
+        .disabled {
+            pointer-events: none;
+            color: grey;
+            text-decoration: none;
+        }
+    </style>
+
     <script>
         osql.requireLogin();
+        var username = sessionStorage.getItem('username');
 
         $(document).ready(async function () {
-            var username = sessionStorage.getItem('username');
             document.getElementById('name').innerHTML = username;
 
             await refreshPlaylists();
@@ -21,14 +29,14 @@
 
         async function createPlaylist() {
             var name = document.getElementById('playlistname').value;
-            var sql = `insert into Playlists (name) values('${name}');`;
+            var sql = `insert into Playlists (name, developer) values("${name}", "${username}");`;
             var playlistId = await osql.connectInsert(sql);
             console.log(playlistId);
 
             var ans = window.confirm("他のユーザーの編集を許可しますか？");
                 if(ans == true){
-                    // var sql = `delete from Songs where id = "${id}"`;
-                    // var objects = await osql.connect(sql);    
+                    var sql = `update Playlists set developer = "" where name= "${name}" AND developer="${username}";`;
+                    var objects = await osql.connect(sql);    
                 } 
 
             refreshPlaylists();
@@ -38,7 +46,10 @@
             var ans = window.confirm("プレイリストを削除しますか？");
                 if(ans == true){
                     var sql = `delete from Playlists where id = "${id}"`;
-                    var objects = await osql.connect(sql);    
+                    var objects = await osql.connect(sql);   
+                    //プレイリストが復活したら曲が残らないように
+                    sql = `delete from Songs where playlistid = "${id}"`;
+                    objects = await osql.connect(sql);    
                 } 
             refreshPlaylists();
         }
@@ -51,6 +62,7 @@
             var sql = 'select * from Playlists;';
             var objects = await osql.connect(sql);
             console.log(objects);
+
             var html = '';
             html = html + '<table border="1">';
             // html = html + '<tr><td></td><td>プレイリスト</td><td></td></tr>';
@@ -58,11 +70,16 @@
                 html = html + '<tr>';
                 var object = objects[i];
                 html = html + `<td>${object.id}</td>`;
-                html = html + `<td>${object.name}</td>`;
+                html = html + `<td>${object.name}</td>`;                
                 html = html + `<td><a href="view.html?playlistId=${object.id}">閲覧</a></td>`;
+            if(object.developer==""){
+                html = html + `<td><a class="disabled">編集</a></td>`;
+                html = html + `<td><button onclick="deletePlaylist(${object.id})" disabled>削除</a></td>`;    
+            }else{
                 html = html + `<td><a href="edit.html?playlistId=${object.id}">編集</a></td>`;
-                html = html + `<td><button onclick="deletePlaylist(${object.id})">削除</a></td>`;
-                html = html + '</tr>';
+                html = html + `<td><button onclick="deletePlaylist(${object.id})">削除</a></td>`;   
+            }
+            html = html + '</tr>';  
             }
             html = html + '</table>';
             document.getElementById('playlists').innerHTML = html;
