@@ -1,2 +1,3 @@
 playlist.htmlで作る機能と見るだけのページ（watch.html）を分ける（認証機能をつける,Localstorageで編集者かそうでないか判断）
+曲順を入れ替えられる
 SpotifyのAPIを呼び出して曲を表示
