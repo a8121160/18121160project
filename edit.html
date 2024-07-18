@@ -31,8 +31,11 @@
 
         async function newsong() {
             var songname = document.getElementById('song').value;
-
-            var sql = `insert into Songs (playlistId, username, song, time) values(${playlistId}, '${username}','${songname}', now());`;
+            var sql = `select max(order_number) as max_order from Songs where playlistId = ${playlistId};`;
+            //↑chatgptを用いて生成
+            var result = await osql.connect(sql);
+            var maxOrder = result[0].max_order || 0;
+            var sql = `insert into Songs (playlistId, username, song, time, order_number) values(${playlistId}, '${username}', '${songname}', now(), ${maxOrder + 1});`;
             var songId = await osql.connectInsert(sql);
             console.log(songId);
 
@@ -48,22 +51,56 @@
                 }refreshsongs() 
         }
 
+        async function Up(id) {
+            var sql = `select id, order_number from Songs where id = ${id};`;
+            var result = await osql.connect(sql);
+            var currentOrder = result[0].order_number;
+            var sql = `select id, order_number from Songs where playlistId = ${playlistId} AND order_number < ${currentOrder} order by order_number desc limit 1;`;
+            var result = await osql.connect(sql);
+            if (result.length > 0) {
+                var targetSong = result[0];
+                var sql = `update Songs Set order_number = ${currentOrder} where id = ${targetSong.id};`;
+                await osql.connect(sql);
+                var sql = `update Songs Set order_number = ${targetSong.order_number} where id = ${id};`;
+                await osql.connect(sql);
+            }
+            refreshsongs();
+        }
+
+        async function Down(id){
+            var sql = `select id, order_number from Songs where id = ${id};`;
+            var result = await osql.connect(sql);
+            var currentOrder = result[0].order_number;
+            var sql = `select id, order_number from Songs where playlistId = ${playlistId} AND order_number > ${currentOrder} order by order_number asc limit 1;`;
+            var result = await osql.connect(sql);
+            if (result.length > 0) {
+                var targetSong = result[0];
+                var sql = `update Songs Set order_number = ${currentOrder} Where id = ${targetSong.id};`;
+                await osql.connect(sql);
+                var sql = `update Songs Set order_number = ${targetSong.order_number} Where id = ${id};`;
+                await osql.connect(sql);
+            }
+            refreshsongs();
+        }
+
   
 
         async function refreshsongs() {
-            var sql = `select * from Songs where playlistId = ${playlistId} order by time desc limit 10;`;
+            var sql = `select * from Songs where playlistId = ${playlistId} order by order_number asc;`;
             var objects = await osql.connect(sql);
             console.log(objects);
 
             var html = '';
             html = html + '<table border="1">';
-            html = html + '<tr><td>曲名</td><td>追加者</td><td></td></tr>';
+            html = html + '<tr><td>曲名</td><td>追加者</td><td colspan="2">曲順</td></tr>';
             for (var i = 0; i < objects.length; i++) {
                 html = html + '<tr>';
                 var object = objects[i];
                 //html = html + `<td>${object.id}</td>`;
                 html = html + `<td>${object.song}</td>`;
                 html = html + `<td>${object.username}</td>`;
+                html += '<td><button onclick="Up(\'' + object.id + '\')">↑</button></td>';
+                html += '<td><button onclick="Down(\'' + object.id + '\')">↓</button></td>';
                 html += '<td><button onclick="buttonPressed(\'' + object.id + '\')">削除</button></td>';
                 html = html + '</tr>';
             }
